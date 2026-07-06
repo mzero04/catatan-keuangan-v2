@@ -127,12 +127,13 @@ body{background:radial-gradient(1200px 800px at 80% -10%,#14233f,var(--bg) 55%);
 /* ── APP ── */
 #app{display:none;}
 #app.visible{display:flex;}
-.sidebar{width:240px;flex-shrink:0;position:sticky;top:0;height:100vh;transition:width .18s ease;overflow:visible;}
+.sidebar{width:240px;flex-shrink:0;position:sticky;top:0;height:100vh;transition:width .18s ease;overflow:visible;z-index:10;}
 .sidebar-inner{width:240px;height:100%;background:var(--bg-soft);border-right:1px solid var(--line);padding:28px 18px;display:flex;flex-direction:column;gap:6px;overflow-y:auto;overflow-x:hidden;transition:width .18s ease;}
 .sidebar-toggle{background:none;border:1px solid var(--line);color:var(--muted);width:26px;height:26px;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.15s;}
 .sidebar-toggle:hover{color:var(--mint);border-color:var(--mint);}
 .sidebar-toggle svg{width:14px;height:14px;transition:transform .18s ease;}
-/* ── Collapsed (desktop): sidebar menyempit jadi ikon saja ── */
+/* ── Collapsed (desktop only ≥769px): sidebar menyempit jadi ikon saja ── */
+@media(min-width:769px){
 .sidebar.collapsed{width:68px;}
 .sidebar.collapsed .sidebar-inner{width:68px;padding:28px 10px;}
 .sidebar.collapsed .brand-text,
@@ -144,7 +145,7 @@ body{background:radial-gradient(1200px 800px at 80% -10%,#14233f,var(--bg) 55%);
 /* ── Hover saat collapsed: sidebar-inner "keluar" sebagai overlay, TIDAK mendorong konten ── */
 .sidebar.collapsed:hover .sidebar-inner{
   position:absolute;top:0;left:0;
-  width:240px;padding:28px 18px;
+  width:240px;height:100%;padding:28px 18px;
   z-index:150;
   box-shadow:14px 0 32px -12px rgba(0,0,0,.55);
 }
@@ -154,6 +155,7 @@ body{background:radial-gradient(1200px 800px at 80% -10%,#14233f,var(--bg) 55%);
 .sidebar.collapsed:hover .brand{justify-content:flex-start;}
 .sidebar.collapsed:hover .sidebar-toggle svg{transform:rotate(0deg);}
 .sidebar.collapsed:hover .nav-item{justify-content:flex-start;padding:11px 14px;}
+}
 .brand{font-family:'Sora',sans-serif;font-weight:800;font-size:20px;letter-spacing:-.02em;display:flex;align-items:center;gap:10px;margin-bottom:28px;padding:0 8px;}
 .brand-text{flex:1;min-width:0;}
 .brand .dot{width:9px;height:9px;border-radius:3px;background:linear-gradient(135deg,var(--mint),var(--gold));}
@@ -418,12 +420,13 @@ tr:last-child td{border-bottom:none;}
   .sidebar,.sidebar.collapsed{
     display:flex;
     position:fixed;bottom:0;left:0;right:0;top:auto;
-    width:100%;height:auto;
+    width:100%;height:auto;min-height:62px;
     flex-direction:row;align-items:center;justify-content:space-around;
     padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+    background:var(--card);
     border-right:none;border-top:1px solid var(--line);
     border-radius:16px 16px 0 0;
-    gap:0;z-index:45;overflow:visible;
+    gap:0;z-index:45;overflow:hidden;
     box-shadow:0 -4px 24px rgba(0,0,0,.3);
   }
   /* Struktur baru (.sidebar-inner) dinetralkan di mobile supaya nav-item tetap jadi flex child langsung dari .sidebar, persis seperti sebelumnya */
@@ -549,7 +552,7 @@ tr:last-child td{border-bottom:none;}
 </div>
 
 <!-- ── MOBILE TOP BAR ── -->
-<div class="mobile-topbar" id="mobileTopbar" style="display:none;">
+<div class="mobile-topbar" id="mobileTopbar">
   <div class="mobile-brand"><div class="dot"></div>Money Tracker</div>
   <div class="mobile-meta">
     <span class="mobile-sync" id="mobileSyncDot"></span>
@@ -769,10 +772,7 @@ tr:last-child td{border-bottom:none;}
           <div class="tx-stat"><div class="tx-stat-label">Total Pengeluaran</div><div class="tx-stat-value" style="color:var(--coral);" id="sumOut">Rp 0</div></div>
           <div class="tx-stat"><div class="tx-stat-label">Selisih</div><div class="tx-stat-value" id="sumNet">Rp 0</div></div>
         </div>
-        <div style="margin-top:18px;">
-          <h3 style="font-size:13px;margin-bottom:10px;color:var(--muted);">Rincian per Kategori (seperti pivot table)</h3>
-          <div class="tbl-wrap"><table><thead><tr><th>Kategori</th><th>Jumlah Transaksi</th><th>Total</th></tr></thead><tbody id="txPivotBody"></tbody></table></div>
-        </div>
+
       </div>
       <div class="card">
         <div class="tbl-wrap"><table><thead><tr><th>Tanggal</th><th>Deskripsi</th><th>Akun</th><th>Kategori</th><th>Jumlah</th><th></th></tr></thead><tbody id="allTx"></tbody></table></div>
@@ -1989,9 +1989,9 @@ function goPage(name, fromPopstate) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   renderAll();
-  // FAB tambah transaksi hanya muncul di halaman Dashboard (mobile)
+  // FAB selalu tampil di semua halaman mobile agar navbar konsisten
   const fab = document.getElementById('mobileFab');
-  if (fab) fab.classList.toggle('show', name === 'dashboard');
+  if (fab) fab.classList.add('show');
   if (!fromPopstate) {
     history.pushState({page: name}, '', location.href);
   }
@@ -2204,17 +2204,6 @@ function renderTxPage(){
   sumNetEl.textContent = (net<0?'-':'') + fmt(Math.abs(net));
   sumNetEl.style.color = net>=0 ? 'var(--mint)' : 'var(--coral)';
 
-  // Pivot per kategori: jumlah transaksi & total, mengikuti hasil filter saat ini
-  const pivot = {};
-  list.forEach(t=>{
-    if(!pivot[t.category]) pivot[t.category]={count:0,total:0,type:t.type};
-    pivot[t.category].count++;
-    pivot[t.category].total+=t.amount;
-  });
-  const pivotEntries = Object.entries(pivot).sort((a,b)=>b[1].total-a[1].total);
-  document.getElementById('txPivotBody').innerHTML = pivotEntries.length
-    ? pivotEntries.map(([cat,d])=>`<tr><td><span class="tag ${d.type==='in'?'tag-in':'tag-out'}">${cat}</span></td><td>${d.count}</td><td class="${d.type==='in'?'ain':'aout'}">${d.type==='in'?'+':'-'} ${fmt(d.total)}</td></tr>`).join('')
-    : '<tr><td colspan="3" class="empty">Tidak ada data untuk filter ini</td></tr>';
 }
 function renderTransfers(){
   document.getElementById('transferTbl').innerHTML=[...transfers].map(tr=>{
