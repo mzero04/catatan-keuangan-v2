@@ -7,6 +7,9 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2334D8A6'/%3E%3Cstop offset='100%25' stop-color='%23F2B84B'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='2' y='2' width='60' height='60' rx='14' fill='%230B1220'/%3E%3Crect x='12' y='20' width='40' height='26' rx='5' fill='url(%23g)'/%3E%3Crect x='12' y='20' width='40' height='8' rx='5' fill='%230B1220' opacity='0.3'/%3E%3Ccircle cx='42' cy='33' r='5' fill='%230B1220' opacity='0.35'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <!-- Supabase v2 dengan fallback CDN -->
 <script>
   window._supabaseLoaded = false;
@@ -368,6 +371,11 @@ input[type="time"]::-webkit-datetime-edit-fields-wrapper *:focus{
 .swap-icon{color:var(--violet);font-size:20px;padding-bottom:10px;flex-shrink:0;}
 .filter-bar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
 .filter-bar select,.filter-bar input{background:var(--card);border:1px solid var(--line);color:var(--text);padding:9px 12px;border-radius:9px;font-size:13px;font-family:'Inter',sans-serif;}
+.export-dd{position:relative;}
+.export-dd-menu{display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px;min-width:170px;z-index:60;box-shadow:0 12px 30px -10px rgba(0,0,0,.55);}
+.export-dd-menu.show{display:block;}
+.export-dd-menu div{padding:9px 12px;border-radius:7px;font-size:13px;cursor:pointer;font-weight:600;color:var(--text);white-space:nowrap;}
+.export-dd-menu div:hover{background:var(--card-hi);color:var(--mint);}
 .chart-wrap{position:relative;height:280px;}
 .legend-list{display:flex;flex-direction:column;gap:9px;margin-top:14px;}
 .legend-row{display:flex;align-items:center;justify-content:space-between;font-size:13px;}
@@ -420,6 +428,35 @@ input[type="time"]::-webkit-datetime-edit-fields-wrapper *:focus{
 /* ── CICILAN & PINJAMAN ── */
 .cicilan-item{padding:14px 0;border-bottom:1px solid var(--line);}
 .cicilan-item:last-child{border-bottom:none;}
+
+/* Target Tabungan */
+.goal-card{background:var(--card-hi);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;}
+.goal-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.goal-icon{font-size:20px;}
+.goal-name{font-weight:700;font-size:14px;flex:1;}
+.goal-nums{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);}
+.goal-nums b{color:var(--text);}
+.goal-deadline{font-size:11.5px;color:var(--muted);}
+.goal-actions{display:flex;gap:6px;margin-top:2px;}
+.goal-actions .app-btn{flex:1;padding:7px 8px;font-size:12px;}
+
+/* Transaksi Berulang */
+.recur-item{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);}
+.recur-item:last-child{border-bottom:none;}
+.recur-info{flex:1;min-width:0;}
+.recur-desc{font-weight:700;font-size:13.5px;}
+.recur-meta{font-size:11.5px;color:var(--muted);margin-top:3px;}
+.recur-amt{font-weight:700;font-size:13.5px;white-space:nowrap;}
+.recur-due-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10.5px;font-weight:700;margin-left:6px;}
+.recur-due-soon{background:var(--gold-dim);color:var(--gold);}
+.recur-due-over{background:var(--coral-dim);color:var(--coral);}
+.recur-actions{display:flex;gap:2px;flex-shrink:0;}
+
+/* Reminder tagihan jatuh tempo */
+.due-reminder-card{background:var(--coral-dim);border:1px solid var(--coral);border-radius:14px;padding:16px;}
+.due-reminder-card h4{font-size:13.5px;margin-bottom:10px;color:#ffb3b3;display:flex;align-items:center;gap:8px;}
+.due-reminder-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid rgba(255,107,107,.25);}
+.due-reminder-row:first-of-type{border-top:none;}
 .cicilan-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px;flex-wrap:wrap;}
 .cicilan-name-wrap{font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .cicilan-badge{font-size:10.5px;padding:2px 8px;border-radius:10px;font-weight:600;white-space:nowrap;}
@@ -466,6 +503,18 @@ input[type="time"]::-webkit-datetime-edit-fields-wrapper *:focus{
 .drawer-handle{width:36px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 20px;}
 .drawer-email{font-weight:700;font-size:14px;margin-bottom:6px;word-break:break-all;}
 .drawer-sync{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:20px;}
+
+/* ── MOBILE "LAINNYA" MENU (nav tambahan, khusus mobile) ── */
+.nav-more-trigger{display:none;}
+.more-drawer-title{font-weight:700;font-size:15px;margin-bottom:14px;}
+.more-nav-list{display:flex;flex-direction:column;gap:4px;}
+.more-nav-item{display:flex;align-items:center;gap:14px;padding:13px 10px;border-radius:12px;color:var(--text);cursor:pointer;font-weight:600;font-size:14px;transition:.15s;user-select:none;position:relative;}
+.more-nav-item svg{width:19px;height:19px;flex-shrink:0;color:var(--muted);}
+.more-nav-item:active{background:var(--card);}
+.more-nav-item.active{background:var(--card-hi);color:var(--mint);}
+.more-nav-item.active svg{color:var(--mint);}
+.more-nav-item .nav-badge{position:absolute;top:10px;right:10px;width:9px;height:9px;border-radius:50%;display:none;pointer-events:none;}
+.more-nav-item .nav-badge.show{display:block;}
 
 /* ══════════════════════════════════════════════════
    RESPONSIVE: TABLET (≤ 1100px) — sudah ada partial
@@ -539,6 +588,12 @@ input[type="time"]::-webkit-datetime-edit-fields-wrapper *:focus{
   .nav-item.active{box-shadow:none;background:var(--card-hi);}
   .nav-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:100%;}
 
+  /* Bottom nav mobile: hanya Dashboard, Transaksi, Transfer, Budgeting yang tampil.
+     Sisanya (Akun Bank, Laporan, Target & Berulang, Profil) disembunyikan dari bar
+     bawah dan dipindah ke drawer "Lainnya" yang bisa disembunyikan/ditampilkan. */
+  .nav-item.nav-hide-mobile{display:none;}
+  .nav-more-trigger{display:flex;}
+
   /* Top bar muncul — grid 3 kolom agar tengah benar-benar di tengah */
   .mobile-topbar{display:grid;grid-template-columns:1fr auto 1fr;}
 
@@ -559,6 +614,9 @@ input[type="time"]::-webkit-datetime-edit-fields-wrapper *:focus{
   .page-head p{font-size:13px;}
   .head-actions{width:100%;display:flex;gap:8px;}
   .head-actions .app-btn{flex:1;justify-content:center;font-size:13px;padding:10px 12px;}
+  .head-actions .export-dd{flex:1;}
+  .head-actions .export-dd .app-btn{width:100%;}
+  .head-actions .export-dd .export-dd-menu{left:0;right:auto;width:100%;min-width:0;}
 
   /* Cards */
   .card{padding:14px;border-radius:12px;}
@@ -570,6 +628,7 @@ input[type="time"]::-webkit-datetime-edit-fields-wrapper *:focus{
 
   /* Tables — horizontal scroll */
   .card:has(table){padding:0;overflow:hidden;}
+  .card:has(table) h3{padding:14px 14px 0 14px;margin-bottom:12px;}
   table{min-width:480px;font-size:12.5px;}
   th{font-size:10.5px;padding:8px 8px;}
   td{padding:9px 8px;}
@@ -676,6 +735,30 @@ input[type="time"]::-webkit-datetime-edit-fields-wrapper *:focus{
       <span id="drawerSyncText">Tersinkron</span>
     </div>
     <button class="btn danger" onclick="doLogout();closeMobileDrawer();">Keluar dari Akun</button>
+  </div>
+</div>
+
+<!-- ── MOBILE "LAINNYA" DRAWER (menu tambahan, khusus mobile) ── -->
+<div class="mobile-drawer" id="mobileMoreDrawer">
+  <div class="drawer-backdrop" onclick="closeMoreDrawer()"></div>
+  <div class="drawer-sheet">
+    <div class="drawer-handle"></div>
+    <div class="more-drawer-title">Menu Lainnya</div>
+    <div class="more-nav-list">
+      <div class="more-nav-item" data-page="accounts" onclick="goPageFromMore('accounts')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20"/></svg><span>Akun Bank</span>
+      </div>
+      <div class="more-nav-item" data-page="report" onclick="goPageFromMore('report')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg><span>Laporan</span>
+      </div>
+      <div class="more-nav-item" data-page="goals" onclick="goPageFromMore('goals')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg><span>Target & Berulang</span>
+        <span class="nav-badge" id="goalsMoreNavBadge"></span>
+      </div>
+      <div class="more-nav-item" data-page="profile" onclick="goPageFromMore('profile')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.5-7 8-7s8 3 8 7"/></svg><span>Profil</span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -812,7 +895,7 @@ input[type="time"]::-webkit-datetime-edit-fields-wrapper *:focus{
     <div class="nav-item" data-page="transactions">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18M3 12h18M3 17h18"/></svg><span class="nav-label">Transaksi</span>
     </div>
-    <div class="nav-item" data-page="accounts">
+    <div class="nav-item nav-hide-mobile" data-page="accounts">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20"/></svg><span class="nav-label">Akun Bank</span>
     </div>
     <div class="nav-item" data-page="transfer">
@@ -822,11 +905,19 @@ input[type="time"]::-webkit-datetime-edit-fields-wrapper *:focus{
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><span class="nav-label">Budgeting</span>
       <span class="nav-badge" id="budgetNavBadge"></span>
     </div>
-    <div class="nav-item" data-page="report">
+    <div class="nav-item nav-hide-mobile" data-page="report">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg><span class="nav-label">Laporan</span>
     </div>
-    <div class="nav-item" data-page="profile">
+    <div class="nav-item nav-hide-mobile" data-page="goals" style="position:relative;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg><span class="nav-label">Target & Berulang</span>
+      <span class="nav-badge" id="goalsNavBadge"></span>
+    </div>
+    <div class="nav-item nav-hide-mobile" data-page="profile">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.5-7 8-7s8 3 8 7"/></svg><span class="nav-label">Profil</span>
+    </div>
+    <!-- Trigger "Lainnya" — hanya muncul di mobile, membuka drawer berisi menu yang disembunyikan di atas -->
+    <div class="nav-item nav-more-trigger" id="navMoreTrigger" onclick="openMoreDrawer()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/><circle cx="5" cy="12" r="1.5"/></svg><span class="nav-label">Lainnya</span>
     </div>
     <!-- Mini collapsed footer: hanya foto profil + sync dot, muncul saat sidebar collapsed -->
     <div class="sidebar-mini">
@@ -879,7 +970,7 @@ input[type="time"]::-webkit-datetime-edit-fields-wrapper *:focus{
       </div>
       <div class="accounts-row" id="dashAccounts" style="margin-bottom:22px;"></div>
       <div class="grid g2">
-        <div class="card"><h3>Pemasukan vs Pengeluaran (6 Bulan) <span class="muted">tren</span></h3><div class="chart-wrap"><canvas id="chartTrend"></canvas></div></div>
+        <div class="card"><h3>Pemasukan vs Pengeluaran (12 Bulan) <span class="muted">tren + net</span></h3><div class="chart-wrap"><canvas id="chartTrend"></canvas></div></div>
         <div class="card"><h3>Pengeluaran per Kategori <span class="muted">bulan ini</span></h3><div class="chart-wrap"><canvas id="chartCat"></canvas></div><div class="legend-list" id="catLegend"></div></div>
       </div>
       <div class="card" style="margin-top:18px;">
@@ -892,7 +983,14 @@ input[type="time"]::-webkit-datetime-edit-fields-wrapper *:focus{
     <div class="page" id="page-transactions">
       <div class="page-head"><div><h1>Transaksi</h1><p>Semua riwayat pemasukan & pengeluaran</p></div>
         <div class="head-actions">
-          <button class="app-btn secondary" onclick="exportCSV()" title="Export ke file CSV / Excel">⬇ Export CSV</button>
+          <div class="export-dd" id="txExportDD">
+            <button class="app-btn secondary" onclick="toggleExportMenu('txExportDD')" title="Export data transaksi">⬇ Export</button>
+            <div class="export-dd-menu">
+              <div onclick="exportCSV();closeExportMenus();">📄 CSV (.csv)</div>
+              <div onclick="exportExcel();closeExportMenus();">📊 Excel (.xlsx)</div>
+              <div onclick="exportPDF();closeExportMenus();">🧾 PDF (.pdf)</div>
+            </div>
+          </div>
           <button class="app-btn" onclick="openTxModal()">+ Transaksi</button>
         </div>
       </div>
@@ -902,14 +1000,31 @@ input[type="time"]::-webkit-datetime-edit-fields-wrapper *:focus{
         <button class="qf-btn" data-key="3m" onclick="setQuickFilter('3m')">3 Bulan</button>
         <button class="qf-btn" data-key="year" onclick="setQuickFilter('year')">Tahun Ini</button>
         <button class="qf-btn" data-key="all" onclick="setQuickFilter('all')">Semua</button>
+        <button class="qf-btn" id="qfCustomBtn" data-key="custom" onclick="setQuickFilter('custom')">Rentang Kustom</button>
+      </div>
+      <div class="filter-bar" id="customRangeRow" style="display:none;">
+        <input type="date" id="fDateFrom" onchange="onCustomRangeChange()" title="Dari tanggal">
+        <input type="date" id="fDateTo" onchange="onCustomRangeChange()" title="Sampai tanggal">
       </div>
       <div class="filter-bar">
         <select id="fAcc" onchange="renderTxPage()"><option value="">Semua Akun</option></select>
         <select id="fType" onchange="renderTxPage()"><option value="">Semua Tipe</option><option value="in">Pemasukan</option><option value="out">Pengeluaran</option></select>
         <select id="fCat" onchange="renderTxPage()"><option value="">Semua Kategori</option></select>
         <select id="fMonth" onchange="onFMonthChange()"><option value="">Semua Bulan</option></select>
-        <input id="fSearch" placeholder="Cari deskripsi..." oninput="renderTxPage()">
+        <input id="fSearch" placeholder="Cari deskripsi, kategori, akun..." oninput="renderTxPage()">
       </div>
+      <div class="filter-bar">
+        <input type="number" id="fAmountMin" placeholder="Nominal min (Rp)" oninput="renderTxPage()" min="0">
+        <input type="number" id="fAmountMax" placeholder="Nominal maks (Rp)" oninput="renderTxPage()" min="0">
+        <select id="fSort" onchange="renderTxPage()">
+          <option value="newest">Terbaru dulu</option>
+          <option value="oldest">Terlama dulu</option>
+          <option value="amount_desc">Nominal terbesar</option>
+          <option value="amount_asc">Nominal terkecil</option>
+        </select>
+        <button class="app-btn secondary" onclick="resetTxFilters()" style="justify-content:center;">✕ Reset Filter</button>
+      </div>
+
       <div class="card" style="margin-bottom:18px;">
         <h3 style="margin-bottom:14px;">Ringkasan Hasil Filter</h3>
         <div class="tx-summary-stats">
@@ -987,6 +1102,7 @@ input[type="time"]::-webkit-datetime-edit-fields-wrapper *:focus{
       <div class="page-head"><div><h1>Laporan</h1><p>Rekap keuangan bulanan per kategori</p></div>
         <div class="head-actions">
           <button class="app-btn secondary" onclick="exportCSV()" title="Export transaksi bulan ini ke CSV">⬇ Export CSV</button>
+          <button class="app-btn" onclick="exportReportPDF()" title="Export laporan bulanan lengkap ke PDF">📄 Export Laporan PDF</button>
         </div>
       </div>
       <div class="report-month-nav">
@@ -1015,6 +1131,40 @@ input[type="time"]::-webkit-datetime-edit-fields-wrapper *:focus{
       <div class="card" style="margin-top:18px;">
         <h3>Grafik Pengeluaran <span class="muted">bulan ini</span></h3>
         <div class="chart-wrap" style="height:240px;"><canvas id="chartReport"></canvas></div>
+      </div>
+      <div class="card" style="margin-top:18px;">
+        <h3>Tren Pemasukan vs Pengeluaran <span class="muted">12 bulan terakhir hingga bulan ini</span></h3>
+        <div class="chart-wrap" style="height:240px;"><canvas id="chartReportTrend"></canvas></div>
+      </div>
+    </div>
+
+    <!-- TARGET TABUNGAN & TRANSAKSI BERULANG -->
+    <div class="page" id="page-goals">
+      <div class="page-head"><div><h1>Target & Berulang</h1><p>Kejar target tabunganmu & jangan sampai lupa bayar tagihan</p></div></div>
+
+      <!-- Reminder tagihan jatuh tempo -->
+      <div id="dueReminderBox" style="display:none;margin-bottom:18px;"></div>
+
+      <!-- TARGET TABUNGAN -->
+      <div class="card" style="margin-bottom:18px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <h3 style="margin-bottom:0;">🎯 Target Tabungan</h3>
+          <button class="app-btn sm" onclick="openGoalModal()">+ Tambah Target</button>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin:8px 0 14px;">Buat target tabungan (mis. Dana Darurat, Liburan, DP Rumah) dan catat setoranmu.</p>
+        <div class="grid g3" id="goalsGrid"></div>
+        <div class="empty" id="goalsEmpty" style="display:none;">Belum ada target tabungan. Klik "+ Tambah Target" untuk mulai.</div>
+      </div>
+
+      <!-- TRANSAKSI BERULANG -->
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <h3 style="margin-bottom:0;">🔁 Transaksi Berulang & Tagihan</h3>
+          <button class="app-btn sm" onclick="openRecurringModal()">+ Tambah</button>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin:8px 0 14px;">Catat tagihan/transaksi rutin (langganan, cicilan, gaji) supaya kamu diingatkan saat jatuh tempo.</p>
+        <div id="recurringList"></div>
+        <div class="empty" id="recurringEmpty" style="display:none;">Belum ada transaksi berulang. Klik "+ Tambah" untuk mulai.</div>
       </div>
     </div>
 
@@ -1182,6 +1332,87 @@ input[type="time"]::-webkit-datetime-edit-fields-wrapper *:focus{
   </div>
 </div>
 
+<!-- MODAL TARGET TABUNGAN -->
+<div class="overlay" id="goalOverlay">
+  <div class="modal">
+    <h2 id="goalModalTitle">Tambah Target Tabungan</h2>
+    <div class="m-field"><label>Nama Target</label><input id="gName" placeholder="Dana Darurat, Liburan, DP Rumah…"></div>
+    <div class="m-field"><label>Ikon</label>
+      <select id="gIcon">
+        <option value="🎯">🎯 Target</option>
+        <option value="🏖️">🏖️ Liburan</option>
+        <option value="🏠">🏠 Rumah</option>
+        <option value="🚗">🚗 Kendaraan</option>
+        <option value="💍">💍 Nikah</option>
+        <option value="🎓">🎓 Pendidikan</option>
+        <option value="🚑">🚑 Dana Darurat</option>
+        <option value="📱">📱 Gadget</option>
+      </select>
+    </div>
+    <div class="field-row-flex">
+      <div class="m-field"><label>Target Dana (Rp)</label><input type="number" id="gTarget" placeholder="0" min="0"></div>
+      <button type="button" class="calc-btn" onclick="openCalculator('gTarget')" title="Kalkulator">🧮</button>
+    </div>
+    <div class="field-row-flex">
+      <div class="m-field"><label>Dana Terkumpul (Rp)</label><input type="number" id="gCurrent" placeholder="0" min="0"></div>
+      <button type="button" class="calc-btn" onclick="openCalculator('gCurrent')" title="Kalkulator">🧮</button>
+    </div>
+    <div class="m-field"><label>Target Tanggal (opsional)</label><input type="date" id="gDate"></div>
+    <div class="modal-actions">
+      <button class="app-btn secondary" onclick="closeGoalModal()">Batal</button>
+      <button class="app-btn danger" id="deleteGoalBtn" style="display:none;" onclick="deleteGoalFromModal()">🗑 Hapus</button>
+      <button class="app-btn" id="saveGoalBtn" onclick="saveGoal()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SETOR TARGET TABUNGAN -->
+<div class="overlay" id="goalDepositOverlay">
+  <div class="modal">
+    <h2>Tambah Setoran</h2>
+    <div class="m-field"><label>Jumlah Setoran (Rp)</label><input type="number" id="gDepositAmt" placeholder="0" min="0"></div>
+    <div class="modal-actions">
+      <button class="app-btn secondary" onclick="closeGoalDepositModal()">Batal</button>
+      <button class="app-btn" onclick="saveGoalDeposit()">Simpan Setoran</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TRANSAKSI BERULANG -->
+<div class="overlay" id="recurringOverlay">
+  <div class="modal">
+    <h2 id="recurringModalTitle">Tambah Transaksi Berulang</h2>
+    <div class="toggle-group" style="display:flex;gap:8px;margin-bottom:14px;">
+      <button type="button" class="tbtn" id="rTypeInBtn" onclick="setRecurringType('in')" style="flex:1;padding:10px;border-radius:9px;border:1px solid var(--line);background:var(--bg-soft);color:var(--text);cursor:pointer;font-weight:700;">Pemasukan</button>
+      <button type="button" class="tbtn" id="rTypeOutBtn" onclick="setRecurringType('out')" style="flex:1;padding:10px;border-radius:9px;border:1px solid var(--line);background:var(--bg-soft);color:var(--text);cursor:pointer;font-weight:700;">Pengeluaran</button>
+    </div>
+    <div class="m-field"><label>Deskripsi</label><input id="rDesc" placeholder="Netflix, Gaji Bulanan, Cicilan Motor…"></div>
+    <div class="field-row-flex">
+      <div class="m-field"><label>Jumlah (Rp)</label><input type="number" id="rAmount" placeholder="0" min="0"></div>
+      <button type="button" class="calc-btn" onclick="openCalculator('rAmount')" title="Kalkulator">🧮</button>
+    </div>
+    <div class="field-row-flex">
+      <div class="m-field"><label>Akun</label><select id="rAccount"></select></div>
+      <div class="m-field"><label>Kategori</label><select id="rCategory"></select></div>
+    </div>
+    <div class="field-row-flex">
+      <div class="m-field"><label>Frekuensi</label>
+        <select id="rFrequency">
+          <option value="weekly">Mingguan</option>
+          <option value="monthly" selected>Bulanan</option>
+          <option value="yearly">Tahunan</option>
+        </select>
+      </div>
+      <div class="m-field"><label>Jatuh Tempo Berikutnya</label><input type="date" id="rNextDue"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="app-btn secondary" onclick="closeRecurringModal()">Batal</button>
+      <button class="app-btn danger" id="deleteRecurringBtn" style="display:none;" onclick="deleteRecurringFromModal()">🗑 Hapus</button>
+      <button class="app-btn" id="saveRecurringBtn" onclick="saveRecurring()">Simpan</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL TAMBAH KATEGORI -->
 <div class="overlay" id="catOverlay">
   <div class="modal">
@@ -1306,6 +1537,8 @@ function allCatOut(){ return categoriesOut.map(c => c.name); }
 let _supabase = null;
 let currentUser = null;
 let transactions = [], transfers = [], budgets = {}, openingBals = {};
+let savingsGoals = [], recurringTx = [];
+let editingGoalId = null, editingRecurringId = null, recurringType = 'out', _depositGoalId = null;
 let _selectedColor = 'gold';
 
 const fmt = n => 'Rp ' + Math.round(n).toLocaleString('id-ID');
@@ -2097,7 +2330,33 @@ async function loadAllData() {
   await loadCicilan();
   await migrateCicilanLocalToSupabase();
 
+  // Load target tabungan & transaksi berulang (fitur baru — aman kalau tabel belum dibuat)
+  await loadSavingsGoals();
+  await loadRecurring();
+
   setSyncStatus('ok', 'Tersinkron · ' + new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}));
+}
+
+async function loadSavingsGoals() {
+  const uid = currentUser.id;
+  const { data, error } = await _supabase.from('savings_goals').select('*').eq('user_id', uid).order('created_at', {ascending:true});
+  if (error) {
+    dbg('Tabel savings_goals belum ada. Jalankan migrasi SQL untuk fitur Target Tabungan: ' + error.message, 'warn');
+    savingsGoals = [];
+    return;
+  }
+  savingsGoals = data || [];
+}
+
+async function loadRecurring() {
+  const uid = currentUser.id;
+  const { data, error } = await _supabase.from('recurring_transactions').select('*').eq('user_id', uid).order('next_due', {ascending:true});
+  if (error) {
+    dbg('Tabel recurring_transactions belum ada. Jalankan migrasi SQL untuk fitur Transaksi Berulang: ' + error.message, 'warn');
+    recurringTx = [];
+    return;
+  }
+  recurringTx = data || [];
 }
 
 let _realtimeChannel = null;
@@ -2123,6 +2382,8 @@ function subscribeRealtime() {
     .on('postgres_changes',{event:'*',schema:'public',table:'opening_balances',filter:`user_id=eq.${currentUser.id}`}, onChange)
     .on('postgres_changes',{event:'*',schema:'public',table:'accounts',filter:`user_id=eq.${currentUser.id}`}, onChange)
     .on('postgres_changes',{event:'*',schema:'public',table:'cicilan',filter:`user_id=eq.${currentUser.id}`}, onChange)
+    .on('postgres_changes',{event:'*',schema:'public',table:'savings_goals',filter:`user_id=eq.${currentUser.id}`}, onChange)
+    .on('postgres_changes',{event:'*',schema:'public',table:'recurring_transactions',filter:`user_id=eq.${currentUser.id}`}, onChange)
     .subscribe(status => {
       dbg('📡 Status channel realtime: ' + status, status==='SUBSCRIBED'?'info':status==='CHANNEL_ERROR'?'err':'warn');
       if (status==='SUBSCRIBED') setSyncStatus('ok','Real-time aktif ✅');
@@ -2215,7 +2476,7 @@ function getBalance(accId) {
 /* ════════════════════════════════════════════════
    NAVIGATION
 ════════════════════════════════════════════════ */
-document.querySelectorAll('.nav-item').forEach(el => el.addEventListener('click', ()=>goPage(el.dataset.page)));
+document.querySelectorAll('.nav-item[data-page]').forEach(el => el.addEventListener('click', ()=>goPage(el.dataset.page)));
 /* ════════════════════════════════════════════════
    SIDEBAR COLLAPSE (desktop) — status disimpan di localStorage
 ════════════════════════════════════════════════ */
@@ -2231,8 +2492,12 @@ function initSidebarState() {
   if (localStorage.getItem(SIDEBAR_KEY) === '1') sb.classList.add('collapsed');
 }
 
+const MORE_DRAWER_PAGES = ['accounts','report','goals','profile'];
 function goPage(name, fromPopstate) {
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===name));
+  document.querySelectorAll('.nav-item[data-page]').forEach(n=>n.classList.toggle('active',n.dataset.page===name));
+  document.querySelectorAll('.more-nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===name));
+  const moreTrigger = document.getElementById('navMoreTrigger');
+  if (moreTrigger) moreTrigger.classList.toggle('active', MORE_DRAWER_PAGES.includes(name));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   renderAll();
@@ -2424,6 +2689,53 @@ function renderRecent(){
   const rows=[...transactions].slice(0,7);
   document.getElementById('recentTx').innerHTML=rows.length?rows.map(t=>txRowHTML(t,false)).join(''):`<tr><td colspan="5" class="empty">Belum ada transaksi</td></tr>`;
 }
+function getFilteredTx(){
+  const fAcc=document.getElementById('fAcc');
+  const fCat=document.getElementById('fCat');
+  const accF=fAcc?fAcc.value:'',typeF=document.getElementById('fType')?document.getElementById('fType').value:'',catF=fCat?fCat.value:'';
+  const srch=document.getElementById('fSearch')?document.getElementById('fSearch').value.toLowerCase().trim():'';
+  const fMon=document.getElementById('fMonth')?document.getElementById('fMonth').value:'';
+  const dFrom=document.getElementById('fDateFrom')?document.getElementById('fDateFrom').value:'';
+  const dTo=document.getElementById('fDateTo')?document.getElementById('fDateTo').value:'';
+  const amtMinRaw=document.getElementById('fAmountMin')?document.getElementById('fAmountMin').value:'';
+  const amtMaxRaw=document.getElementById('fAmountMax')?document.getElementById('fAmountMax').value:'';
+  const amtMin=amtMinRaw!==''?parseFloat(amtMinRaw):null;
+  const amtMax=amtMaxRaw!==''?parseFloat(amtMaxRaw):null;
+  const sortKey=document.getElementById('fSort')?document.getElementById('fSort').value:'newest';
+  let list=[...transactions];
+  if(accF)list=list.filter(t=>t.account===accF);
+  if(typeF)list=list.filter(t=>t.type===typeF);
+  if(catF)list=list.filter(t=>t.category===catF);
+  if(srch){
+    list=list.filter(t=>{
+      const acc=ACCOUNTS_CFG.find(a=>a.id===t.account);
+      return t.description.toLowerCase().includes(srch)
+        || (t.category||'').toLowerCase().includes(srch)
+        || (acc&&acc.name.toLowerCase().includes(srch));
+    });
+  }
+  if(_fRange==='custom'&&(dFrom||dTo)){
+    if(dFrom)list=list.filter(t=>t.date>=dFrom);
+    if(dTo)list=list.filter(t=>t.date<=dTo);
+  } else if(fMon){
+    list=list.filter(t=>mk(t.date)===fMon);
+  } else if(_fRange==='3m'){
+    const m3=Array.from({length:3},(_,i)=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-i);return d.toISOString().slice(0,7);});
+    list=list.filter(t=>m3.includes(mk(t.date)));
+  } else if(_fRange==='year'){
+    const yr=new Date().getFullYear().toString();list=list.filter(t=>t.date&&t.date.startsWith(yr));
+  }
+  if(amtMin!==null&&!isNaN(amtMin))list=list.filter(t=>t.amount>=amtMin);
+  if(amtMax!==null&&!isNaN(amtMax))list=list.filter(t=>t.amount<=amtMax);
+  switch(sortKey){
+    case 'oldest': list.sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||''))); break;
+    case 'amount_desc': list.sort((a,b)=>b.amount-a.amount); break;
+    case 'amount_asc': list.sort((a,b)=>a.amount-b.amount); break;
+    default: list.sort((a,b)=>(b.date+(b.time||'')).localeCompare(a.date+(a.time||'')));
+  }
+  return list;
+}
+
 function renderTxPage(){
   const fAcc=document.getElementById('fAcc');
   // Selalu rebuild filter akun agar mencerminkan akun terkini
@@ -2435,16 +2747,8 @@ function renderTxPage(){
   const prevCat = fCat.value;
   fCat.innerHTML = '<option value="">Semua Kategori</option>' + [...allCatIn(),...allCatOut()].filter((v,i,a)=>a.indexOf(v)===i).map(c=>`<option value="${c}">${c}</option>`).join('');
   if (prevCat) fCat.value = prevCat;
-  const accF=fAcc.value,typeF=document.getElementById('fType').value,catF=fCat.value,srch=document.getElementById('fSearch').value.toLowerCase();
-  const fMon=document.getElementById('fMonth')?document.getElementById('fMonth').value:'';
-  let list=[...transactions];
-  if(accF)list=list.filter(t=>t.account===accF);
-  if(typeF)list=list.filter(t=>t.type===typeF);
-  if(catF)list=list.filter(t=>t.category===catF);
-  if(srch)list=list.filter(t=>t.description.toLowerCase().includes(srch));
-  if(fMon){list=list.filter(t=>mk(t.date)===fMon);}
-  else if(_fRange==='3m'){const m3=Array.from({length:3},(_,i)=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-i);return d.toISOString().slice(0,7);});list=list.filter(t=>m3.includes(mk(t.date)));}
-  else if(_fRange==='year'){const yr=new Date().getFullYear().toString();list=list.filter(t=>t.date&&t.date.startsWith(yr));}
+
+  const list=getFilteredTx();
   document.getElementById('allTx').innerHTML=list.map(t=>txRowHTML(t,true)).join('');
   document.getElementById('txEmpty').style.display=list.length?'none':'block';
 
@@ -2476,12 +2780,17 @@ function renderTransfers(){
 ════════════════════════════════════════════════ */
 let cTrend,cCat,cBudget;
 function renderCharts(){
-  const months=Array.from({length:6},(_,i)=>{const d=new Date();d.setMonth(d.getMonth()-5+i);return d.toISOString().slice(0,7);});
+  const months=Array.from({length:12},(_,i)=>{const d=new Date();d.setMonth(d.getMonth()-11+i);return d.toISOString().slice(0,7);});
   const labels=months.map(m=>new Date(m+'-02').toLocaleDateString('id-ID',{month:'short',year:'2-digit'}));
   const incData=months.map(m=>transactions.filter(t=>t.type==='in'&&mk(t.date)===m).reduce((s,t)=>s+t.amount,0));
   const expData=months.map(m=>transactions.filter(t=>t.type==='out'&&mk(t.date)===m).reduce((s,t)=>s+t.amount,0));
+  const netData=months.map((m,i)=>incData[i]-expData[i]);
   if(cTrend)cTrend.destroy();
-  cTrend=new Chart(document.getElementById('chartTrend'),{type:'bar',data:{labels,datasets:[{label:'Pemasukan',data:incData,backgroundColor:'#34D8A6',borderRadius:6,maxBarThickness:26},{label:'Pengeluaran',data:expData,backgroundColor:'#FF6B6B',borderRadius:6,maxBarThickness:26}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8C9BBE',font:{family:'Inter'}}},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw)}}},scales:{x:{ticks:{color:'#8C9BBE'},grid:{display:false}},y:{ticks:{color:'#8C9BBE',callback:v=>'Rp '+(v/1e6).toFixed(1)+'jt'},grid:{color:'#223252'}}}}});
+  cTrend=new Chart(document.getElementById('chartTrend'),{data:{labels,datasets:[
+    {type:'bar',label:'Pemasukan',data:incData,backgroundColor:'#34D8A6',borderRadius:6,maxBarThickness:20,order:2},
+    {type:'bar',label:'Pengeluaran',data:expData,backgroundColor:'#FF6B6B',borderRadius:6,maxBarThickness:20,order:2},
+    {type:'line',label:'Selisih (Net)',data:netData,borderColor:'#9B8CFF',backgroundColor:'#9B8CFF',pointBackgroundColor:'#9B8CFF',tension:.3,borderWidth:2,pointRadius:3,order:1}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8C9BBE',font:{family:'Inter'}}},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw)}}},scales:{x:{ticks:{color:'#8C9BBE',maxRotation:0,autoSkip:true,font:{size:10.5}},grid:{display:false}},y:{ticks:{color:'#8C9BBE',callback:v=>'Rp '+(v/1e6).toFixed(1)+'jt'},grid:{color:'#223252'}}}}});
   const monthExp=transactions.filter(t=>t.type==='out'&&mk(t.date)===curMk());
   const byCat={};monthExp.forEach(t=>byCat[t.category]=(byCat[t.category]||0)+t.amount);
   const cLabels=Object.keys(byCat),cVals=Object.values(byCat),cColors=cLabels.map(c=>CAT_COLOR[c]||'#9AA5C0');
@@ -2508,10 +2817,10 @@ function renderBudgetPage(){
   if(cBudget)cBudget.destroy();
   cBudget=new Chart(document.getElementById('chartBudget'),{type:'bar',data:{labels:cats,datasets:[{label:'Budget',data:cats.map(c=>budgets[c]),backgroundColor:'#223252',borderRadius:5,maxBarThickness:18},{label:'Realisasi',data:cats.map(c=>transactions.filter(t=>t.type==='out'&&t.category===c&&mk(t.date)===curMk()).reduce((s,t)=>s+t.amount,0)),backgroundColor:cats.map(c=>CAT_COLOR[c]||'#9AA5C0'),borderRadius:5,maxBarThickness:18}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8C9BBE'}},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw)}}},scales:{x:{ticks:{color:'#8C9BBE',callback:v=>'Rp '+(v/1000)+'k'},grid:{color:'#223252'}},y:{ticks:{color:'#8C9BBE',font:{size:11}},grid:{display:false}}}}});
 }
-function renderAll(){renderAccounts();renderStats();renderRecent();renderTxPage();renderTransfers();renderCharts();renderBudgetPage();renderCicilanSection();renderReportPage();renderProfileUI();}
+function renderAll(){renderAccounts();renderStats();renderRecent();renderTxPage();renderTransfers();renderCharts();renderBudgetPage();renderCicilanSection();renderReportPage();renderGoals();renderRecurring();renderDueReminders();renderProfileUI();}
 
 /* ════════════════════════════════════════════════
-   FILTER BULAN TRANSAKSI + EXPORT CSV
+   FILTER TRANSAKSI (canggih) + EXPORT CSV/EXCEL/PDF
 ════════════════════════════════════════════════ */
 let _fRange = 'thisMonth';
 
@@ -2531,51 +2840,204 @@ function initMonthFilter() {
 }
 
 function onFMonthChange() {
-  _fRange = 'custom';
+  _fRange = 'custom-month';
   document.querySelectorAll('.qf-btn').forEach(b => b.classList.remove('active'));
+  const row=document.getElementById('customRangeRow'); if(row)row.style.display='none';
   renderTxPage();
 }
 
 function setQuickFilter(key) {
   _fRange = key;
   const sel = document.getElementById('fMonth');
-  if (sel) {
-    if (key === 'thisMonth') { sel.value = curMk(); }
-    else if (key === 'lastMonth') { const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-1);sel.value=d.toISOString().slice(0,7); }
-    else { sel.value = ''; }
+  const row = document.getElementById('customRangeRow');
+  if (key === 'custom') {
+    if (sel) sel.value = '';
+    if (row) row.style.display = 'flex';
+  } else {
+    if (row) row.style.display = 'none';
+    if (sel) {
+      if (key === 'thisMonth') { sel.value = curMk(); }
+      else if (key === 'lastMonth') { const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-1);sel.value=d.toISOString().slice(0,7); }
+      else { sel.value = ''; }
+    }
   }
   document.querySelectorAll('.qf-btn').forEach(b => b.classList.toggle('active', b.dataset.key === key));
   renderTxPage();
 }
 
+function onCustomRangeChange(){
+  _fRange = 'custom';
+  document.querySelectorAll('.qf-btn').forEach(b => b.classList.toggle('active', b.dataset.key === 'custom'));
+  renderTxPage();
+}
+
+function resetTxFilters(){
+  ['fAcc','fType','fCat','fSearch','fAmountMin','fAmountMax','fDateFrom','fDateTo'].forEach(id=>{
+    const el=document.getElementById(id); if(el)el.value='';
+  });
+  const sortEl=document.getElementById('fSort'); if(sortEl)sortEl.value='newest';
+  const row=document.getElementById('customRangeRow'); if(row)row.style.display='none';
+  setQuickFilter('thisMonth');
+}
+
+/* Dropdown menu export (CSV / Excel / PDF) */
+function toggleExportMenu(id){
+  const wrap=document.getElementById(id);
+  if(!wrap)return;
+  const menu=wrap.querySelector('.export-dd-menu');
+  const isOpen=menu.classList.contains('show');
+  closeExportMenus();
+  if(!isOpen)menu.classList.add('show');
+}
+function closeExportMenus(){document.querySelectorAll('.export-dd-menu').forEach(m=>m.classList.remove('show'));}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.export-dd'))closeExportMenus();
+});
+
 function exportCSV() {
-  const fAcc=document.getElementById('fAcc')?document.getElementById('fAcc').value:'';
-  const typeF=document.getElementById('fType')?document.getElementById('fType').value:'';
-  const catF=document.getElementById('fCat')?document.getElementById('fCat').value:'';
-  const srch=document.getElementById('fSearch')?document.getElementById('fSearch').value.toLowerCase():'';
-  const fMon=document.getElementById('fMonth')?document.getElementById('fMonth').value:'';
-  let list=[...transactions];
-  if(fAcc)list=list.filter(t=>t.account===fAcc);
-  if(typeF)list=list.filter(t=>t.type===typeF);
-  if(catF)list=list.filter(t=>t.category===catF);
-  if(srch)list=list.filter(t=>t.description.toLowerCase().includes(srch));
-  if(fMon){list=list.filter(t=>mk(t.date)===fMon);}
-  else if(_fRange==='3m'){const m3=Array.from({length:3},(_,i)=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-i);return d.toISOString().slice(0,7);});list=list.filter(t=>m3.includes(mk(t.date)));}
-  else if(_fRange==='year'){const yr=new Date().getFullYear().toString();list=list.filter(t=>t.date&&t.date.startsWith(yr));}
+  const list=getFilteredTx();
+  if(!list.length){alert('Tidak ada transaksi yang bisa di-export dengan filter saat ini.');return;}
   const rows=[['Tanggal','Jam','Deskripsi','Tipe','Kategori','Akun','Jumlah (Rp)']];
   list.forEach(t=>{const a=ACCOUNTS_CFG.find(x=>x.id===t.account);rows.push([t.date,t.time||'',t.description,t.type==='in'?'Pemasukan':'Pengeluaran',t.category,a?a.name:t.account,t.amount]);});
-  if(!list.length){alert('Tidak ada transaksi yang bisa di-export dengan filter saat ini.');return;}
   const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
   const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download='transaksi.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  const a=document.createElement('a');a.href=url;a.download='transaksi_'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
 }
+
+function exportExcel() {
+  if (typeof XLSX === 'undefined') { alert('Library Excel belum termuat. Cek koneksi internet lalu refresh halaman.'); return; }
+  const list=getFilteredTx();
+  if(!list.length){alert('Tidak ada transaksi yang bisa di-export dengan filter saat ini.');return;}
+  const rows=list.map(t=>{
+    const a=ACCOUNTS_CFG.find(x=>x.id===t.account);
+    return {
+      Tanggal:t.date, Jam:t.time||'', Deskripsi:t.description,
+      Tipe:t.type==='in'?'Pemasukan':'Pengeluaran', Kategori:t.category,
+      Akun:a?a.name:t.account, 'Jumlah (Rp)':t.amount
+    };
+  });
+  const totalIn=list.filter(t=>t.type==='in').reduce((s,t)=>s+t.amount,0);
+  const totalOut=list.filter(t=>t.type==='out').reduce((s,t)=>s+t.amount,0);
+  rows.push({});
+  rows.push({Tanggal:'',Jam:'',Deskripsi:'TOTAL PEMASUKAN',Tipe:'',Kategori:'',Akun:'','Jumlah (Rp)':totalIn});
+  rows.push({Tanggal:'',Jam:'',Deskripsi:'TOTAL PENGELUARAN',Tipe:'',Kategori:'',Akun:'','Jumlah (Rp)':totalOut});
+  rows.push({Tanggal:'',Jam:'',Deskripsi:'SELISIH',Tipe:'',Kategori:'',Akun:'','Jumlah (Rp)':totalIn-totalOut});
+  const ws=XLSX.utils.json_to_sheet(rows);
+  ws['!cols']=[{wch:12},{wch:8},{wch:32},{wch:14},{wch:18},{wch:18},{wch:16}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Transaksi');
+  XLSX.writeFile(wb,'transaksi_'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+
+function exportPDF() {
+  if (typeof window.jspdf === 'undefined') { alert('Library PDF belum termuat. Cek koneksi internet lalu refresh halaman.'); return; }
+  const list=getFilteredTx();
+  if(!list.length){alert('Tidak ada transaksi yang bisa di-export dengan filter saat ini.');return;}
+  const { jsPDF } = window.jspdf;
+  const doc=new jsPDF({orientation:'landscape',unit:'pt'});
+  const totalIn=list.filter(t=>t.type==='in').reduce((s,t)=>s+t.amount,0);
+  const totalOut=list.filter(t=>t.type==='out').reduce((s,t)=>s+t.amount,0);
+  doc.setFont('helvetica','bold');doc.setFontSize(16);doc.text('Laporan Transaksi',40,40);
+  doc.setFont('helvetica','normal');doc.setFontSize(9);
+  doc.text('Dicetak: '+new Date().toLocaleString('id-ID'),40,57);
+  doc.setFontSize(10);
+  doc.text(`Pemasukan: Rp ${totalIn.toLocaleString('id-ID')}    Pengeluaran: Rp ${totalOut.toLocaleString('id-ID')}    Selisih: Rp ${(totalIn-totalOut).toLocaleString('id-ID')}    Jumlah Transaksi: ${list.length}`,40,74);
+  doc.autoTable({
+    startY:90,
+    head:[['Tanggal','Jam','Deskripsi','Tipe','Kategori','Akun','Jumlah (Rp)']],
+    body:list.map(t=>{
+      const a=ACCOUNTS_CFG.find(x=>x.id===t.account);
+      return [t.date,(t.time||'').slice(0,5),t.description,t.type==='in'?'Masuk':'Keluar',t.category,a?a.name:t.account,(t.type==='in'?'+ ':'- ')+t.amount.toLocaleString('id-ID')];
+    }),
+    styles:{fontSize:8,cellPadding:4,textColor:[20,20,20]},
+    headStyles:{fillColor:[19,31,54],textColor:255,fontStyle:'bold'},
+    alternateRowStyles:{fillColor:[242,244,248]},
+    margin:{left:40,right:40}
+  });
+  doc.save('transaksi_'+new Date().toISOString().slice(0,10)+'.pdf');
+}
+
+function exportReportPDF() {
+  if (typeof window.jspdf === 'undefined') { alert('Library PDF belum termuat. Cek koneksi internet lalu refresh halaman.'); return; }
+  const mk2 = getReportMk();
+  const label = new Date(mk2+'-02').toLocaleDateString('id-ID', {month:'long', year:'numeric'});
+  const monthTx = transactions.filter(t => mk(t.date) === mk2);
+  if(!monthTx.length){ alert('Tidak ada transaksi pada '+label+' untuk dilaporkan.'); return; }
+  const income = monthTx.filter(t=>t.type==='in').reduce((s,t)=>s+t.amount,0);
+  const expense = monthTx.filter(t=>t.type==='out').reduce((s,t)=>s+t.amount,0);
+  const net = income - expense;
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'pt' });
+  const pageW = doc.internal.pageSize.getWidth();
+
+  doc.setFont('helvetica','bold'); doc.setFontSize(18); doc.text('Laporan Keuangan Bulanan', 40, 44);
+  doc.setFont('helvetica','normal'); doc.setFontSize(12); doc.text(label, 40, 62);
+  doc.setFontSize(9); doc.setTextColor(120); doc.text('Dicetak: '+new Date().toLocaleString('id-ID'), 40, 78); doc.setTextColor(20);
+
+  doc.autoTable({
+    startY: 96,
+    theme: 'plain',
+    body: [
+      ['Total Pemasukan', 'Rp ' + income.toLocaleString('id-ID')],
+      ['Total Pengeluaran', 'Rp ' + expense.toLocaleString('id-ID')],
+      ['Selisih (Net)', 'Rp ' + net.toLocaleString('id-ID')],
+      ['Jumlah Transaksi', String(monthTx.length)],
+    ],
+    styles: { fontSize: 11, cellPadding: { top:3, bottom:3, left:0, right:10 } },
+    columnStyles: { 0: { fontStyle:'bold', cellWidth:160 } },
+  });
+
+  let y = doc.lastAutoTable.finalY + 24;
+
+  const expCats={}; monthTx.filter(t=>t.type==='out').forEach(t=>expCats[t.category]=(expCats[t.category]||0)+t.amount);
+  const expArr=Object.entries(expCats).sort((a,b)=>b[1]-a[1]);
+  const incCats={}; monthTx.filter(t=>t.type==='in').forEach(t=>incCats[t.category]=(incCats[t.category]||0)+t.amount);
+  const incArr=Object.entries(incCats).sort((a,b)=>b[1]-a[1]);
+
+  if(expArr.length){
+    doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.text('Pengeluaran per Kategori', 40, y);
+    doc.autoTable({
+      startY: y+10,
+      head: [['Kategori','Jumlah','%']],
+      body: expArr.map(([c,v])=>[c, 'Rp '+v.toLocaleString('id-ID'), Math.round(v/expense*100)+'%']),
+      styles:{fontSize:9}, headStyles:{fillColor:[19,31,54],textColor:255}, margin:{left:40,right:40},
+      tableWidth: (pageW-80)/2 - 10,
+    });
+  }
+  const expEndY = doc.lastAutoTable.finalY;
+
+  if(incArr.length){
+    doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.text('Pemasukan per Kategori', pageW/2+10, y);
+    doc.autoTable({
+      startY: y+10,
+      head: [['Kategori','Jumlah','%']],
+      body: incArr.map(([c,v])=>[c, 'Rp '+v.toLocaleString('id-ID'), Math.round(v/income*100)+'%']),
+      styles:{fontSize:9}, headStyles:{fillColor:[19,31,54],textColor:255},
+      margin:{left:pageW/2+10,right:40}, tableWidth:(pageW-80)/2 - 10,
+    });
+  }
+  y = Math.max(expEndY, doc.lastAutoTable.finalY) + 26;
+
+  try{
+    const chartCanvas = document.getElementById('chartReport');
+    if(chartCanvas && chartCanvas.toDataURL && expArr.length){
+      if(y > 620){ doc.addPage(); y = 40; }
+      doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.text('Grafik Pengeluaran per Kategori', 40, y);
+      doc.addImage(chartCanvas.toDataURL('image/png',1.0), 'PNG', 40, y+10, 220, 220);
+    }
+  }catch(e){ console.warn('Gagal menyisipkan grafik kategori ke PDF:', e); }
+
+  doc.save('laporan_'+mk2+'.pdf');
+}
+
 
 /* ════════════════════════════════════════════════
    LAPORAN BULANAN
 ════════════════════════════════════════════════ */
 let reportMonthOffset = 0;
-let cReport;
+let cReport, cReportTrend;
 
 function getReportMk() {
   const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + reportMonthOffset);
@@ -2598,12 +3060,28 @@ function renderReportPage() {
   const net = income - expense;
   const savingRate = income > 0 ? Math.round((net/income)*100) : null;
 
+  // Perbandingan dengan bulan sebelumnya (Month-over-Month)
+  const prevD = new Date(mk2+'-02'); prevD.setMonth(prevD.getMonth()-1);
+  const prevMk = prevD.toISOString().slice(0,7);
+  const prevTx = transactions.filter(t => mk(t.date) === prevMk);
+  const prevIncome = prevTx.filter(t=>t.type==='in').reduce((s,t)=>s+t.amount,0);
+  const prevExpense = prevTx.filter(t=>t.type==='out').reduce((s,t)=>s+t.amount,0);
+  const prevNet = prevIncome - prevExpense;
+  function momBadge(cur, prev, higherIsGood){
+    if(prev<=0) return cur>0 ? '<span style="color:var(--muted);">Baru bulan ini</span>' : '';
+    const chg = Math.round(((cur-prev)/prev)*100);
+    const good = higherIsGood ? chg>=0 : chg<=0;
+    const arrow = chg>=0 ? '▲' : '▼';
+    const color = chg===0 ? 'var(--muted)' : (good ? 'var(--mint)' : 'var(--coral)');
+    return `<span style="color:${color};">${arrow} ${Math.abs(chg)}%</span> <span style="color:var(--muted);">vs bulan lalu</span>`;
+  }
+
   const rptInc=document.getElementById('rptIncome'); if(rptInc)rptInc.textContent=fmt(income);
   const rptExp=document.getElementById('rptExpense'); if(rptExp)rptExp.textContent=fmt(expense);
-  const rptIncSub=document.getElementById('rptIncSub'); if(rptIncSub)rptIncSub.textContent=monthTx.filter(t=>t.type==='in').length+' transaksi';
-  const rptExpSub=document.getElementById('rptExpSub'); if(rptExpSub)rptExpSub.textContent=monthTx.filter(t=>t.type==='out').length+' transaksi';
+  const rptIncSub=document.getElementById('rptIncSub'); if(rptIncSub)rptIncSub.innerHTML=monthTx.filter(t=>t.type==='in').length+' transaksi · '+momBadge(income,prevIncome,true);
+  const rptExpSub=document.getElementById('rptExpSub'); if(rptExpSub)rptExpSub.innerHTML=monthTx.filter(t=>t.type==='out').length+' transaksi · '+momBadge(expense,prevExpense,false);
   const rptNet=document.getElementById('rptNet'); if(rptNet){rptNet.textContent=(net<0?'-':'')+fmt(Math.abs(net));rptNet.style.color=net>=0?'var(--mint)':'var(--coral)';}
-  const rptNetSub=document.getElementById('rptNetSub'); if(rptNetSub)rptNetSub.textContent=net>=0?'Surplus bulan ini':'Defisit bulan ini';
+  const rptNetSub=document.getElementById('rptNetSub'); if(rptNetSub)rptNetSub.innerHTML=(net>=0?'Surplus bulan ini':'Defisit bulan ini')+' · '+momBadge(net,prevNet,true);
 
   const rptSav=document.getElementById('rptSaving');
   const rptSavLbl=document.getElementById('rptSavingLabel');
@@ -2653,6 +3131,22 @@ function renderReportPage() {
     cReport=new Chart(chartEl,{type:'doughnut',data:{labels:expArr.map(([c])=>c),datasets:[{data:expArr.map(([,v])=>v),backgroundColor:expArr.map(([c])=>CAT_COLOR[c]||'#9AA5C0'),borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{labels:{color:'#8C9BBE',font:{family:'Inter',size:11}}},tooltip:{callbacks:{label:ctx=>ctx.label+': '+fmt(ctx.raw)+' ('+Math.round(ctx.raw/expense*100)+'%)'}}}}});
   } else if(chartEl){
     const ctx2=chartEl.getContext('2d');if(ctx2)ctx2.clearRect(0,0,chartEl.width,chartEl.height);
+  }
+
+  // Tren 12 bulan (Pemasukan vs Pengeluaran + Net) hingga bulan yang sedang dilihat
+  if(cReportTrend){cReportTrend.destroy();cReportTrend=null;}
+  const trendEl=document.getElementById('chartReportTrend');
+  if(trendEl){
+    const trendMonths=Array.from({length:12},(_,i)=>{const d=new Date(mk2+'-02');d.setMonth(d.getMonth()-11+i);return d.toISOString().slice(0,7);});
+    const trendLabels=trendMonths.map(m=>new Date(m+'-02').toLocaleDateString('id-ID',{month:'short',year:'2-digit'}));
+    const trendInc=trendMonths.map(m=>transactions.filter(t=>t.type==='in'&&mk(t.date)===m).reduce((s,t)=>s+t.amount,0));
+    const trendExp=trendMonths.map(m=>transactions.filter(t=>t.type==='out'&&mk(t.date)===m).reduce((s,t)=>s+t.amount,0));
+    const trendNet=trendMonths.map((m,i)=>trendInc[i]-trendExp[i]);
+    cReportTrend=new Chart(trendEl,{data:{labels:trendLabels,datasets:[
+      {type:'bar',label:'Pemasukan',data:trendInc,backgroundColor:'#34D8A6',borderRadius:6,maxBarThickness:20,order:2},
+      {type:'bar',label:'Pengeluaran',data:trendExp,backgroundColor:'#FF6B6B',borderRadius:6,maxBarThickness:20,order:2},
+      {type:'line',label:'Selisih (Net)',data:trendNet,borderColor:'#9B8CFF',backgroundColor:'#9B8CFF',pointBackgroundColor:'#9B8CFF',tension:.3,borderWidth:2,pointRadius:3,order:1}
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8C9BBE',font:{family:'Inter'}}},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw)}}},scales:{x:{ticks:{color:'#8C9BBE',maxRotation:0,font:{size:10.5}},grid:{display:false}},y:{ticks:{color:'#8C9BBE',callback:v=>'Rp '+(v/1e6).toFixed(1)+'jt'},grid:{color:'#223252'}}}}});
   }
 }
 
@@ -2882,7 +3376,251 @@ function bayarCicilan(cId){
   pushOverlayState('txOverlay');
 }
 
-// ── MIGRASI: pindahkan data cicilan lama dari localStorage (per-device) ke Supabase ──
+/* ════════════════════════════════════════════════
+   TARGET TABUNGAN (savings_goals)
+════════════════════════════════════════════════ */
+function goalProgressPct(g){ return g.target_amount>0 ? Math.min(100, Math.round((g.current_amount/g.target_amount)*100)) : 0; }
+
+function renderGoals(){
+  const grid=document.getElementById('goalsGrid'), empty=document.getElementById('goalsEmpty');
+  if(!grid) return;
+  if(!savingsGoals.length){ grid.innerHTML=''; if(empty) empty.style.display='block'; return; }
+  if(empty) empty.style.display='none';
+  grid.innerHTML=savingsGoals.map(g=>{
+    const pct=goalProgressPct(g);
+    const barCls = pct>=100 ? 'bar-ok' : pct>=50 ? 'bar-ok' : pct>=20 ? 'bar-warn' : 'bar-over';
+    const deadline = g.target_date ? new Date(g.target_date+'T00:00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}) : null;
+    return `<div class="goal-card">
+      <div class="goal-top"><span class="goal-icon">${g.icon||'🎯'}</span><span class="goal-name">${g.name}</span>
+        <button class="icon-btn" onclick="openGoalModal('${g.id}')" title="Edit"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+      </div>
+      <div class="bar-bg"><div class="bar-fill ${barCls}" style="width:${pct}%;"></div></div>
+      <div class="goal-nums"><span><b>${fmt(g.current_amount)}</b> terkumpul</span><span>${pct}%</span></div>
+      <div class="goal-nums"><span>Target: <b>${fmt(g.target_amount)}</b></span>${deadline?`<span class="goal-deadline">⏰ ${deadline}</span>`:''}</div>
+      <div class="goal-actions">
+        <button class="app-btn sm" onclick="openGoalDepositModal('${g.id}')">+ Setor</button>
+        <button class="app-btn sm secondary" onclick="deleteGoal('${g.id}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openGoalModal(id){
+  editingGoalId = id || null;
+  document.getElementById('goalModalTitle').textContent = id ? 'Edit Target Tabungan' : 'Tambah Target Tabungan';
+  document.getElementById('deleteGoalBtn').style.display = id ? 'inline-flex' : 'none';
+  if(id){
+    const g=savingsGoals.find(x=>String(x.id)===String(id));
+    if(!g) return;
+    document.getElementById('gName').value=g.name;
+    document.getElementById('gIcon').value=g.icon||'🎯';
+    document.getElementById('gTarget').value=g.target_amount;
+    document.getElementById('gCurrent').value=g.current_amount;
+    document.getElementById('gDate').value=g.target_date||'';
+  } else {
+    document.getElementById('gName').value='';
+    document.getElementById('gIcon').value='🎯';
+    document.getElementById('gTarget').value='';
+    document.getElementById('gCurrent').value='0';
+    document.getElementById('gDate').value='';
+  }
+  document.getElementById('goalOverlay').classList.add('active');
+  pushOverlayState('goalOverlay');
+}
+function closeGoalModal(){ document.getElementById('goalOverlay').classList.remove('active'); popOverlayState(); }
+
+async function saveGoal(){
+  const name=document.getElementById('gName').value.trim();
+  const icon=document.getElementById('gIcon').value;
+  const target=parseFloat(document.getElementById('gTarget').value);
+  const current=parseFloat(document.getElementById('gCurrent').value)||0;
+  const target_date=document.getElementById('gDate').value||null;
+  if(!name||!target||target<=0){ alert('Lengkapi nama dan target dana.'); return; }
+  const payload={name,icon,target_amount:target,current_amount:current,target_date};
+  setSyncStatus('syncing', editingGoalId?'Mengupdate target...':'Menyimpan target...');
+  let error,data;
+  if(editingGoalId){
+    ({error,data}=await _supabase.from('savings_goals').update(payload).eq('id',editingGoalId).eq('user_id',currentUser.id).select());
+    if(!error&&(!data||data.length===0)) error={message:'Tidak ada baris yang berubah. Kemungkinan RLS belum punya kebijakan UPDATE untuk tabel "savings_goals", atau tabel belum dibuat — jalankan migrasi SQL terlebih dulu.'};
+  } else {
+    ({error}=await _supabase.from('savings_goals').insert({user_id:currentUser.id,...payload}));
+  }
+  if(error){ console.error('saveGoal error:',error); alert('Error: '+error.message+(/does not exist|schema cache/i.test(error.message)?'\n\nSepertinya tabel "savings_goals" belum dibuat. Jalankan file SQL migrasi yang sudah disediakan di Supabase SQL Editor.':'')); setSyncStatus('error','Gagal'); return; }
+  closeGoalModal(); await loadAllData(); renderAll();
+}
+async function deleteGoalFromModal(){ if(!editingGoalId) return; await deleteGoal(editingGoalId); closeGoalModal(); }
+async function deleteGoal(id){
+  if(!confirm('Hapus target tabungan ini?')) return;
+  setSyncStatus('syncing','Menghapus...');
+  const {error,data}=await _supabase.from('savings_goals').delete().eq('id',id).eq('user_id',currentUser.id).select();
+  if(!error&&(!data||data.length===0)){ alert('Gagal menghapus: tidak ada baris terhapus (cek RLS DELETE policy untuk savings_goals).'); setSyncStatus('error','Gagal'); return; }
+  if(error){ alert('Gagal menghapus: '+error.message); setSyncStatus('error','Gagal'); return; }
+  await loadAllData(); renderAll();
+}
+function openGoalDepositModal(id){
+  _depositGoalId=id;
+  document.getElementById('gDepositAmt').value='';
+  document.getElementById('goalDepositOverlay').classList.add('active');
+  pushOverlayState('goalDepositOverlay');
+}
+function closeGoalDepositModal(){ document.getElementById('goalDepositOverlay').classList.remove('active'); popOverlayState(); }
+async function saveGoalDeposit(){
+  const amt=parseFloat(document.getElementById('gDepositAmt').value);
+  if(!amt||amt<=0){ alert('Masukkan jumlah setoran.'); return; }
+  const g=savingsGoals.find(x=>String(x.id)===String(_depositGoalId));
+  if(!g) return;
+  const newAmount=(parseFloat(g.current_amount)||0)+amt;
+  setSyncStatus('syncing','Menambah setoran...');
+  const {error,data}=await _supabase.from('savings_goals').update({current_amount:newAmount}).eq('id',_depositGoalId).eq('user_id',currentUser.id).select();
+  if(!error&&(!data||data.length===0)){ alert('Gagal menyimpan setoran: tidak ada baris berubah (cek RLS UPDATE policy untuk savings_goals).'); setSyncStatus('error','Gagal'); return; }
+  if(error){ alert('Gagal: '+error.message); setSyncStatus('error','Gagal'); return; }
+  closeGoalDepositModal(); await loadAllData(); renderAll();
+}
+
+/* ════════════════════════════════════════════════
+   TRANSAKSI BERULANG & PENGINGAT TAGIHAN (recurring_transactions)
+════════════════════════════════════════════════ */
+function setRecurringType(t){
+  recurringType=t;
+  document.getElementById('rTypeInBtn').style.background = t==='in' ? 'var(--mint-dim)' : 'var(--bg-soft)';
+  document.getElementById('rTypeInBtn').style.color = t==='in' ? 'var(--mint)' : 'var(--text)';
+  document.getElementById('rTypeOutBtn').style.background = t==='out' ? 'var(--coral-dim)' : 'var(--bg-soft)';
+  document.getElementById('rTypeOutBtn').style.color = t==='out' ? 'var(--coral)' : 'var(--text)';
+  const cat=document.getElementById('rCategory');
+  cat.innerHTML=(t==='in'?allCatIn():allCatOut()).map(c=>`<option value="${c}">${c}</option>`).join('');
+}
+function daysUntil(dateStr){
+  const d=new Date(dateStr+'T00:00:00'), now=new Date(); now.setHours(0,0,0,0);
+  return Math.round((d-now)/86400000);
+}
+function nextDueAfter(dateStr, freq){
+  const d=new Date(dateStr+'T00:00:00');
+  if(freq==='weekly') d.setDate(d.getDate()+7);
+  else if(freq==='yearly') d.setFullYear(d.getFullYear()+1);
+  else d.setMonth(d.getMonth()+1);
+  return d.toISOString().slice(0,10);
+}
+const FREQ_LABEL={weekly:'Mingguan',monthly:'Bulanan',yearly:'Tahunan'};
+
+function renderRecurring(){
+  const list=document.getElementById('recurringList'), empty=document.getElementById('recurringEmpty');
+  if(!list) return;
+  if(!recurringTx.length){ list.innerHTML=''; if(empty) empty.style.display='block'; return; }
+  if(empty) empty.style.display='none';
+  const sorted=[...recurringTx].sort((a,b)=>(a.next_due||'').localeCompare(b.next_due||''));
+  list.innerHTML=sorted.map(r=>{
+    const a=ACCOUNTS_CFG.find(x=>x.id===r.account);
+    const dleft=daysUntil(r.next_due);
+    let badge='';
+    if(dleft<0) badge=`<span class="recur-due-badge recur-due-over">Terlambat ${Math.abs(dleft)}h</span>`;
+    else if(dleft===0) badge=`<span class="recur-due-badge recur-due-over">Jatuh tempo hari ini</span>`;
+    else if(dleft<=3) badge=`<span class="recur-due-badge recur-due-soon">${dleft} hari lagi</span>`;
+    const dateLbl=new Date(r.next_due+'T00:00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+    return `<div class="recur-item">
+      <div class="recur-info">
+        <div class="recur-desc">${r.description}${badge}</div>
+        <div class="recur-meta">${FREQ_LABEL[r.frequency]||r.frequency} · ${a?a.name:r.account} · ${r.category} · Berikutnya: ${dateLbl}</div>
+      </div>
+      <div class="recur-amt ${r.type==='in'?'ain':'aout'}">${r.type==='in'?'+':'-'} ${fmt(r.amount)}</div>
+      <div class="recur-actions">
+        <button class="icon-btn" onclick="payRecurringNow('${r.id}')" title="Catat sebagai transaksi sekarang">✅</button>
+        <button class="icon-btn" onclick="openRecurringModal('${r.id}')" title="Edit"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+        <button class="icon-btn" onclick="deleteRecurring('${r.id}')" title="Hapus">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderDueReminders(){
+  const box=document.getElementById('dueReminderBox');
+  const badge=document.getElementById('goalsNavBadge');
+  const badgeMore=document.getElementById('goalsMoreNavBadge');
+  if(!box) return;
+  const due=recurringTx.filter(r=>daysUntil(r.next_due)<=3);
+  if(!due.length){ box.style.display='none'; box.innerHTML=''; if(badge) badge.classList.remove('show'); if(badgeMore) badgeMore.classList.remove('show'); return; }
+  const badgeColor = due.some(r=>daysUntil(r.next_due)<0) ? 'var(--coral)' : 'var(--gold)';
+  if(badge){ badge.classList.add('show'); badge.style.background = badgeColor; }
+  if(badgeMore){ badgeMore.classList.add('show'); badgeMore.style.background = badgeColor; }
+  box.style.display='block';
+  due.sort((a,b)=>(a.next_due||'').localeCompare(b.next_due||''));
+  box.innerHTML=`<div class="due-reminder-card"><h4>⏰ ${due.length} Tagihan Segera/Sudah Jatuh Tempo</h4>${due.map(r=>{
+    const dleft=daysUntil(r.next_due);
+    const dateLbl=new Date(r.next_due+'T00:00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+    const status=dleft<0?`Terlambat ${Math.abs(dleft)} hari`:dleft===0?'Jatuh tempo hari ini':`${dleft} hari lagi`;
+    return `<div class="due-reminder-row"><div><b>${r.description}</b><div style="font-size:11.5px;color:var(--muted);">${status} · ${dateLbl} · ${fmt(r.amount)}</div></div><button class="app-btn sm" onclick="payRecurringNow('${r.id}')">Bayar Sekarang</button></div>`;
+  }).join('')}</div>`;
+}
+
+function openRecurringModal(id){
+  editingRecurringId = id || null;
+  document.getElementById('rAccount').innerHTML=ACCOUNTS_CFG.map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
+  document.getElementById('recurringModalTitle').textContent = id ? 'Edit Transaksi Berulang' : 'Tambah Transaksi Berulang';
+  document.getElementById('deleteRecurringBtn').style.display = id ? 'inline-flex' : 'none';
+  if(id){
+    const r=recurringTx.find(x=>String(x.id)===String(id));
+    if(!r) return;
+    setRecurringType(r.type);
+    document.getElementById('rDesc').value=r.description;
+    document.getElementById('rAmount').value=r.amount;
+    document.getElementById('rAccount').value=r.account;
+    document.getElementById('rCategory').value=r.category;
+    document.getElementById('rFrequency').value=r.frequency;
+    document.getElementById('rNextDue').value=r.next_due;
+  } else {
+    setRecurringType('out');
+    document.getElementById('rDesc').value='';
+    document.getElementById('rAmount').value='';
+    document.getElementById('rFrequency').value='monthly';
+    document.getElementById('rNextDue').value=today();
+  }
+  document.getElementById('recurringOverlay').classList.add('active');
+  pushOverlayState('recurringOverlay');
+}
+function closeRecurringModal(){ document.getElementById('recurringOverlay').classList.remove('active'); popOverlayState(); }
+
+async function saveRecurring(){
+  const description=document.getElementById('rDesc').value.trim();
+  const amount=parseFloat(document.getElementById('rAmount').value);
+  const account=document.getElementById('rAccount').value;
+  const category=document.getElementById('rCategory').value;
+  const frequency=document.getElementById('rFrequency').value;
+  const next_due=document.getElementById('rNextDue').value;
+  if(!description||!amount||amount<=0||!next_due){ alert('Lengkapi semua data.'); return; }
+  const payload={type:recurringType,description,amount,account,category,frequency,next_due,active:true};
+  setSyncStatus('syncing', editingRecurringId?'Mengupdate...':'Menyimpan...');
+  let error,data;
+  if(editingRecurringId){
+    ({error,data}=await _supabase.from('recurring_transactions').update(payload).eq('id',editingRecurringId).eq('user_id',currentUser.id).select());
+    if(!error&&(!data||data.length===0)) error={message:'Tidak ada baris yang berubah. Kemungkinan RLS belum punya kebijakan UPDATE untuk tabel "recurring_transactions", atau tabel belum dibuat — jalankan migrasi SQL terlebih dulu.'};
+  } else {
+    ({error}=await _supabase.from('recurring_transactions').insert({user_id:currentUser.id,...payload}));
+  }
+  if(error){ console.error('saveRecurring error:',error); alert('Error: '+error.message+(/does not exist|schema cache/i.test(error.message)?'\n\nSepertinya tabel "recurring_transactions" belum dibuat. Jalankan file SQL migrasi yang sudah disediakan di Supabase SQL Editor.':'')); setSyncStatus('error','Gagal'); return; }
+  closeRecurringModal(); await loadAllData(); renderAll();
+}
+async function deleteRecurringFromModal(){ if(!editingRecurringId) return; await deleteRecurring(editingRecurringId); closeRecurringModal(); }
+async function deleteRecurring(id){
+  if(!confirm('Hapus transaksi berulang ini?')) return;
+  setSyncStatus('syncing','Menghapus...');
+  const {error,data}=await _supabase.from('recurring_transactions').delete().eq('id',id).eq('user_id',currentUser.id).select();
+  if(!error&&(!data||data.length===0)){ alert('Gagal menghapus: tidak ada baris terhapus (cek RLS DELETE policy untuk recurring_transactions).'); setSyncStatus('error','Gagal'); return; }
+  if(error){ alert('Gagal menghapus: '+error.message); setSyncStatus('error','Gagal'); return; }
+  await loadAllData(); renderAll();
+}
+async function payRecurringNow(id){
+  const r=recurringTx.find(x=>String(x.id)===String(id));
+  if(!r) return;
+  if(!confirm(`Catat "${r.description}" (${fmt(r.amount)}) sebagai transaksi hari ini?`)) return;
+  setSyncStatus('syncing','Mencatat transaksi...');
+  const { error: txErr } = await _supabase.from('transactions').insert({user_id:currentUser.id,type:r.type,description:r.description,amount:r.amount,account:r.account,category:r.category,date:today(),time:nowTime()});
+  if(txErr){ alert('Gagal mencatat transaksi: '+txErr.message); setSyncStatus('error','Gagal'); return; }
+  const newNextDue=nextDueAfter(r.next_due, r.frequency);
+  const { error: updErr } = await _supabase.from('recurring_transactions').update({next_due:newNextDue}).eq('id',id).eq('user_id',currentUser.id);
+  if(updErr){ console.error('Gagal update jadwal berikutnya:',updErr); }
+  await loadAllData(); renderAll();
+}
+
+
 // Berjalan otomatis sekali per perangkat, setelah tabel "cicilan" berhasil dibaca dari Supabase.
 // Aman dijalankan berkali-kali: item yang idnya sudah ada di cloud tidak akan diduplikasi,
 // dan tiap device menandai dirinya sendiri lewat flag di localStorage supaya tidak mengulang.
@@ -3393,6 +4131,18 @@ function openMobileDrawer() {
 }
 function closeMobileDrawer() {
   popOverlayState('mobileDrawer');
+}
+
+function openMoreDrawer() {
+  const d = document.getElementById('mobileMoreDrawer');
+  if (d) { d.classList.add('open'); pushOverlayState('mobileMoreDrawer'); }
+}
+function closeMoreDrawer() {
+  popOverlayState('mobileMoreDrawer');
+}
+function goPageFromMore(name) {
+  closeMoreDrawer();
+  goPage(name);
 }
 
 /* ════════════════════════════════════════════════
